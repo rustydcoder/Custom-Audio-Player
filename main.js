@@ -1,6 +1,5 @@
-const songTitle = document.getElementById("songTitle"),
-   fillBar = document.getElementById("fill"),
-   pausePlayBtn = document.querySelector('#play img'),
+const fillBar = document.getElementById("fill"),
+   pausePlayBtn = document.querySelectorAll('.play img'),
    songPoster = document.querySelector('#image img'),
    bgImg = document.querySelector('#bg img');
 
@@ -8,29 +7,14 @@ const songs = ["Song1.mp3", "Song2.mp3", "Song3.mp3"];
 const poster = ["Poster1.jpg", "Poster2.jpg", "Poster3.jpg"];
 
 const song = new Audio();
-let currentSong = 0;    // it point to the current song
 
-window.onload = playSong;   // it will call the function playSong when window is load
-
-function playSong() {
-
-   song.src = songs[currentSong];  //set the source of 0th song 
-
-   songTitle.textContent = songs[currentSong]; // set the title of song
-
-   song.play();    // play the song
-}
-
-function playOrPauseSong() {
-   if (song.paused) {
-      song.play();
-      pausePlayBtn.setAttribute("src", "Pause.png");
-   }
-   else {
-      song.pause();
-      pausePlayBtn.setAttribute("src", "Play.png");
-   }
-}
+pausePlayBtn.forEach((btn, i) => {
+   btn.addEventListener('click', function () {
+      changePoster(i)
+      song.src = songs[i];
+      togglePlay(song)
+   })
+})
 
 song.addEventListener('timeupdate', function () {
 
@@ -39,27 +23,23 @@ song.addEventListener('timeupdate', function () {
    fillBar.style.width = position * 100 + '%';
 });
 
-
-function next() {
-
-   currentSong++;
-   if (currentSong > 2) {
-      currentSong = 0;
-   }
-   playSong();
-   pausePlayBtn.setAttribute("src", "Pause.png");
-   songPoster.setAttribute("src", poster[currentSong]);
-   bgImg.setAttribute("src", poster[currentSong]);
+function changePoster(i) {
+   bgImg.setAttribute('src', poster[i])
+   songPoster.setAttribute('src', poster[i])
 }
 
-function pre() {
+var isPlaying = false;
 
-   currentSong--;
-   if (currentSong < 0) {
-      currentSong = 2;
+function togglePlay(s) {
+   if (isPlaying) {
+      s.pause()
+   } else {
+      s.play();
    }
-   playSong();
-   pausePlayBtn.setAttribute("src", "Pause.png");
-   songPoster.setAttribute("src", poster[currentSong]);
-   bgImg.setAttribute("src", poster[currentSong]);
-}
+};
+song.onplaying = function () {
+   isPlaying = true;
+};
+song.onpause = function () {
+   isPlaying = false;
+};
